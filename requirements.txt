@@ -1,0 +1,5 @@
+mcp_use
+pymongo
+python-dotenv
+httpx
+langchain-openai
