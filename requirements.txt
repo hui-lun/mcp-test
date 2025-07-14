@@ -3,3 +3,5 @@ pymongo
 python-dotenv
 httpx
 langchain-openai
+langchain_mcp_adapters
+langgraph
