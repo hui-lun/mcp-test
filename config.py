@@ -6,3 +6,6 @@ COLLECTION_NAME = "BDM-info"
 # MCP Server configuration
 SERVER_HOST = "localhost"
 SERVER_PORT = 8000
+
+# Searxng
+SEARXNG_API = "http://192.168.1.139:8081"

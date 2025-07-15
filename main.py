@@ -19,7 +19,6 @@ async def main():
             await session.initialize()
 
             tools = await load_mcp_tools(session)
-
             llm = ChatOpenAI(
                 model="gemma-3-27b-it",
                 openai_api_key="EMPTY",
@@ -34,12 +33,11 @@ async def main():
             messages = [
                 SystemMessage(
                     content=(
-                        "你是資料查詢助手。當使用工具時，請提供包含 'uri', 'name', 'text' 的 context。"
-                        "例如：查詢 BDM-info collection 時，uri 應為 'bdm-mgmt://BDM-info'，name 為 'BDM-info'。"
+                        "You are a helpful AI assistant."
                     )
                 ),
                 HumanMessage(
-                    content="在 BDM-mgmt 資料庫的 BDM-info中，有哪幾位？"
+                    content="台灣 Iphone16 什麼時候發售"
                 )
             ]
 
