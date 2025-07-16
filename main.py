@@ -33,11 +33,13 @@ async def main():
             messages = [
                 SystemMessage(
                     content=(
-                        "You are a helpful AI assistant."
+                        """You are a helpful AI assistant. For every user question, 
+                        you MUST use the provided tool to get the answer. 
+                        Do NOT answer directly. Always call the tool and return its result."""
                     )
                 ),
                 HumanMessage(
-                    content="台灣 Iphone16 什麼時候發售"
+                    content="台灣 iphone 16 的發售價格"
                 )
             ]
 

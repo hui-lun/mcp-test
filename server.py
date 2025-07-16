@@ -27,28 +27,29 @@ def get_people_in_bdm_info(context: TextResource) -> List[str]:
 @mcp.tool()
 def search(query: str) -> str:
     """
-    搜索关键字
+    搜索關鍵字，只回傳 content
     """
-    # API URL
-    url = f"{config.SEARXNG_API}/search?q=%s&format=json"%query
+    url = (
+        f"{config.SEARXNG_API}/search"
+        f"?q={query}"
+        f"&format=json"
+        f"&time_range=month"
+        f"&language=zh-TW"
+        f"&num=10"
+    )
+    headers = {"User-Agent": "Mozilla/5.0"}
     try:
-        # 发送GET请求
-        response = requests.get(url)
-
-        # 检查请求是否成功
-        if response.status_code == 200:
-            # 将响应内容解析为JSON
+        response = requests.get(url, headers=headers, timeout=10)
+        response.raise_for_status()
+        try:
             data = response.json()
-            result_list=[]
-            for i in data["results"]:
-                result_list.append(i["content"])
-            content="\n".join(result_list)
-            return content
-        else:
-            print(f"请求失败，状态码: {response.status_code}")
-            return False
+        except ValueError:
+            return "搜尋結果解析失敗"
+        contents = [i.get("content", "") for i in data.get("results", []) if i.get("content")]
+        if not contents:
+            return "查無相關內容"
+        return "\n".join(contents)
     except requests.exceptions.RequestException as e:
-        print(f"请求过程中发生错误: {e}")
-        return False
+        return f"搜尋過程發生錯誤: {e}"
 if __name__ == "__main__":
     mcp.run(transport="stdio")
