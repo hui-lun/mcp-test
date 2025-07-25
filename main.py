@@ -39,11 +39,10 @@ async def main():
             # 提示：角色設定 + 使用者問題（Agent 自行決定要用哪個工具）
             messages = [
                 SystemMessage(
-                    content="你是 BDM 專案資料助手，可以使用 get_all_project_titles 工具查詢所有專案的 Title。" \
-                        "請使用工具 get_all_bdm_names_and_ids，列出所有 BDM 的名字和編號。"
+                    content="你是 BDM 專案資料助手，可以使用 get_machine_info_by_model 工具查詢指定 ProjectModel 型號的詳細資訊。"
                 ),
                 HumanMessage(
-                    content="請列出所有專案的 Title"
+                    content="請說明 G241-G40-100-000 型號的詳細資訊"
                 )
             ]
             # 執行推理 + 工具選擇 + 回覆
