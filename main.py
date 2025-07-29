@@ -37,6 +37,7 @@ async def main():
             agent = create_react_agent(llm, tools)
 
             # System + User messages (agent will decide which tool to invoke)
+            user_query = input("請輸入查詢內容：")
             messages = [
                 SystemMessage(
                     content="你是 BDM 專案資料助手，可以使用 get_machine_info_by_model 工具查詢指定 ProjectModel 型號的詳細資料。" \
@@ -44,7 +45,7 @@ async def main():
                             "請使用工具 get_all_project_titles，列出所有專案的 Title。"
                 ),
                 HumanMessage(
-                    content="請說明 R183-Z96-AAV1-000 型號的詳細資訊"
+                    content=user_query
                 )
             ]
             # Run agent reasoning + tool selection + response

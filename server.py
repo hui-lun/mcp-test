@@ -48,30 +48,77 @@ def get_all_project_titles(context: Context) -> List[str]:
 @mcp.tool()
 def get_machine_info_by_model(context: Context, model: str) -> dict:
     """
-    Return the complete information of the machine based on the specified ProjectModel model.
+    根據指定的 ProjectModel 型號回傳機器資訊：
+    - 若為完整型號，則精確比對並回傳單一筆 exact_match。
+    - 若為前綴型號，則回傳所有前綴匹配 prefix_matches。
     """
     import json
     import os
+    import logging
+
+    logger = logging.getLogger(__name__)
+    model = model.strip()
+    model_lower = model.lower()
+
     spec_path = os.path.join(os.path.dirname(__file__), 'spec.json')
     if not os.path.exists(spec_path):
         return {"error": "找不到 spec.json"}
+
+    exact_match = None
+    prefix_matches = []
+
     try:
         with open(spec_path, 'r', encoding='utf-8') as f:
             data = json.load(f)
+
             for item in data:
                 if not isinstance(item, dict):
                     continue
-                # First match the outermost ProjectModel
+
+                # === 精確比對 ===
                 if item.get("ProjectModel") == model:
-                    return item
-                # Then match the ProjectModel in systemInfo[0]
+                    exact_match = item
+                    break  # 如果你想早停
+
                 system_info = item.get("systemInfo")
-                if system_info and isinstance(system_info, list) and system_info:
-                    if system_info[0].get("ProjectModel") == model:
-                        return item
-        return {"error": f"找不到型號為 {model} 的機器資訊"}
+                if (
+                    isinstance(system_info, list) and system_info and
+                    isinstance(system_info[0], dict) and
+                    system_info[0].get("ProjectModel") == model
+                ):
+                    exact_match = item
+                    break  # 如果你想早停
+
+            # === 前綴比對 ===（若沒找到精確結果或想補充多筆）
+            for item in data:
+                if not isinstance(item, dict):
+                    continue
+
+                # 比對外層
+                pm = item.get("ProjectModel", "")
+                if pm.lower().startswith(model_lower):
+                    prefix_matches.append(item)
+                    continue
+
+                # 比對 systemInfo[*]
+                system_info = item.get("systemInfo")
+                if isinstance(system_info, list):
+                    for sys in system_info:
+                        if isinstance(sys, dict):
+                            sys_pm = sys.get("ProjectModel", "")
+                            if sys_pm.lower().startswith(model_lower):
+                                prefix_matches.append(item)
+                                break  # 一筆只加一次
+
+        return {
+            "exact_match": exact_match,
+            "prefix_matches": prefix_matches
+        }
+
     except Exception as e:
+        logger.exception("讀取 spec.json 發生錯誤")
         return {"error": f"讀取失敗：{str(e)}"}
+
 
 
 if __name__ == "__main__":
